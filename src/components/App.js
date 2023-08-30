@@ -1,62 +1,58 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import "./../styles/App.css";
 import axios from "axios";
-
-const App = () => {
-  const [name, setName] = useState("");
-  const [movies, setMovies] = useState([]);
-
-  function handleSearch(e) {
-    e.preventDefault();
-    // console.log(name)
-    let url = "http://www.omdbapi.com";
+ const App = () => {
+  const [searchTerm, setsearchTerm] = useState("");
+   const [movies,setMovies]=useState(undefined)
+   function handleSearchMovie(event) {
+    event.preventDefault();
     axios
-      .get(url, {
-        
+      .get("https://www.omdbapi.com/", {
         params: {
-          apikey: "a5fe31d8",
-          s: name, //movie name search by user
-          type: "movie",
+          apikey: "b3f19237",
+          s: searchTerm,
         },
       })
       .then((response) => {
-        console.log(response.data.Search);
         setMovies(response.data.Search);
-        setName("");
+        setsearchTerm("");
       })
-      .catch((err) => console.log(err));
+      .catch((err) => setError("Invalid movie name. Please try again."));
   }
   return (
     <div>
-      {/* Do not remove the main div */}
-      <h3>Search Movie</h3>
+      <h2>Search Movie</h2>
       <form>
         <input
           type="text"
-          placeholder="search"
-          name="search-bar"
-          onChange={(e) => setName(e.target.value)}
-          value={name}
+          placeholder="Enter Movie Name"
+          onChange={(e) => setsearchTerm(e.target.value)}
+          value={searchTerm}
         />
-        <button type="submit" onClick={handleSearch}>
+        <button type="submit" onClick={handleSearchMovie}>
           Search
         </button>
       </form>
 
-      {movies ? (
-        <ul>
-          {movies.map((obj) => {
-            return (
+      <ul>
+        {movies != undefined ? (
+          movies.map((movie) => (
+            <div>
               <li>
-                <h2>{obj.Title}</h2>
-                <img src={obj.Poster} alt={obj.Title} />
+                <h1>
+                  {movie.Title}
+                  {movie.Year}
+                </h1>
+                <img src={movie.Poster} alt="{movie.Title}" />
               </li>
-            );
-          })}
-        </ul>
-      ) : (
-        <h2 className="error">Invalid movie name. Please try again.</h2>
-      )}
+            </div>
+          ))
+        ) : (
+          <p className="error">Invalid movie name. Please try again.</p>
+        )}
+      </ul>
+
+      <div></div>
     </div>
   );
 };
